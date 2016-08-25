@@ -39,14 +39,14 @@ public final class TwistedPermsBukkit extends RedemptivePlugin implements Resour
         throw new IllegalArgumentException("Invalid data source specified!");
     }
 
-    private <T extends PreDataSource> T construct(Class<T> dataSourceType) throws Exception {
+    private PreDataSource construct(Class<? extends PreDataSource> dataSourceType) throws Exception {
         MavenLibraries annotation = dataSourceType.getAnnotation(MavenLibraries.class);
         if (annotation != null && !getClass().isAnnotationPresent(IgnoreLibraries.class))
             LibraryHandler.load(this, annotation.value());
 
         Constructor<?> constructor = dataSourceType.getDeclaredConstructors()[0];
         Class<?> configType = constructor.getParameterTypes()[0];
-        return (T) constructor.newInstance(yaml.loadAs(getResource("database.yml"), configType));
+        return (PreDataSource) constructor.newInstance(yaml.loadAs(getResource("database.yml"), configType));
     }
 
     @Override

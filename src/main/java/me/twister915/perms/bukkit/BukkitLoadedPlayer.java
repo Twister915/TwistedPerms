@@ -25,7 +25,7 @@ public final class BukkitLoadedPlayer implements LoadedPlayer {
 
     public BukkitLoadedPlayer(RedemptivePlugin plugin, Player player, DataManager manager, IDataSource source) throws Exception {
         this.plugin = plugin;
-        this.data = source.unsafe().getPlayer(manager, player.getUniqueId(), true);
+        this.data = source.getPlayer(manager, player.getUniqueId(), true).toBlocking().value();
         this.player = player;
     }
 

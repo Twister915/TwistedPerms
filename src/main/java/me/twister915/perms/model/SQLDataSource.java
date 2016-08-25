@@ -12,7 +12,7 @@ import java.sql.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public final class SQLDataSource implements _IDataSource, PreDataSource {
+public final class SQLDataSource implements _IDataSource {
     private final static String META_SELECT = "entities.prefix AS prefix, " +
             "entities.suffix AS suffix, " +
             "entities.color AS color, ";
