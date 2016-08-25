@@ -14,10 +14,13 @@ class DataSourceProxyUtil {
     private DataSourceProxyUtil() {}
 
     @SuppressWarnings({"unchecked", "ConfusingArgumentToVarargsMethod"})
-    public static IDataSource proxy(_IDataSource root, ThreadModel model, Action1<Throwable> handler) throws IllegalAccessException {
-        Class<? extends _IDataSource> aClass = root.getClass();
+    public static IDataSourceUnsafe proxy(Object root, ThreadModel model, Action1<Throwable> handler) throws IllegalAccessException {
+        if (!(root instanceof _IDataSource))
+            throw new IllegalArgumentException("Invalid data source provided!");
+
+        Class<?> aClass = root.getClass();
         Scheduler.Worker worker = model.getAsync().createWorker();
-        IDataSource proxied = (IDataSource) Proxy.newProxyInstance(aClass.getClassLoader(), new Class[]{aClass}, (proxy, method, args) -> {
+        IDataSourceUnsafe proxied = (IDataSourceUnsafe) Proxy.newProxyInstance(aClass.getClassLoader(), new Class[]{IDataSourceUnsafe.class}, (proxy, method, args) -> {
             if (method.isDefault())
                 return method.invoke(proxy, args);
 

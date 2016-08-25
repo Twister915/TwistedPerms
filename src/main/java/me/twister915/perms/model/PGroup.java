@@ -39,7 +39,7 @@ public final class PGroup extends PEntity implements Comparable<PGroup> {
 
     @Override
     public int compareTo(PGroup o) {
-        return priority - o.getPriority();
+        return getPriority() - o.getPriority();
     }
 
     @Synchronized

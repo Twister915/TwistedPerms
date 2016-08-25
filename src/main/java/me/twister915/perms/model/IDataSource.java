@@ -37,6 +37,4 @@ public interface IDataSource {
     void deleteParent(PGroup child, PGroup parent);
 
     void purgeEntity(PEntity entity);
-    
-    _IDataSource unsafe();
 }

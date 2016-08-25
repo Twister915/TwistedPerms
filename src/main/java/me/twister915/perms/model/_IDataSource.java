@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
 
-public interface _IDataSource {
+interface _IDataSource {
     void onEnable(ResourceFaucet faucet) throws Exception;
     void onDisable() throws Exception;
     Map<UUID, PPlayer> getPlayers(DataManager loaded, Collection<UUID> uuids, Func1<UUID, Boolean> allowCreate) throws Exception;

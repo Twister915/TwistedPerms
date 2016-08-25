@@ -12,7 +12,7 @@ import java.sql.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public final class SQLDataSource implements _IDataSource {
+public final class SQLDataSource implements _IDataSource, PreDataSource {
     private final static String META_SELECT = "entities.prefix AS prefix, " +
             "entities.suffix AS suffix, " +
             "entities.color AS color, ";
@@ -181,7 +181,7 @@ public final class SQLDataSource implements _IDataSource {
              *      If we find all the parents we need, we construct the group and update all the collections
              *      This will remove raw groups from the raw collections
              *
-             *      If the raw collections have unconstructed groups, that means that there are
+             *      If the raw collections have unconstructed groups, that means that there are more parents to find
              *
              */
                     // "we need more groups"
@@ -226,6 +226,7 @@ public final class SQLDataSource implements _IDataSource {
 
                 //there are still more parents or groups unconstructed
                 while (gottenRawLong.size() > 0) {
+                    assert Collections.disjoint(parentsNeeded, gottenRawLong.keySet());
                     Set<Long> lastQuery = new HashSet<>(parentsNeeded);
 
                     if (parentsNeeded.size() > 0) {

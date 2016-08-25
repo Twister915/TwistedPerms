@@ -1,6 +1,8 @@
 package me.twister915.perms.model;
 
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.Getter;
 import lombok.Synchronized;
 import rx.Scheduler;
 import rx.Single;
@@ -16,7 +18,7 @@ import java.util.UUID;
     private final Scheduler syncScheduler;
     private final PlayerSource playerSource;
     //data management
-    private final IDataSource dataSource;
+    @Getter(AccessLevel.NONE) private final IDataSourceUnsafe dataSource;
 
     //actual data
     //  groups
@@ -28,13 +30,13 @@ import java.util.UUID;
 
     private Subscription subscription;
 
-    public PermissionsManager(PlayerSource playerSource, ThreadModel threadModel, _IDataSource dataSource, ResourceFaucet faucet) throws Exception {
+    public PermissionsManager(PlayerSource playerSource, ThreadModel threadModel, PreDataSource dataSource, ResourceFaucet faucet) throws Exception {
         this.dataSource = DataSourceProxyUtil.proxy(dataSource, threadModel, this::handleError);
         this.asyncWorker = threadModel.getAsync().createWorker();
         this.syncScheduler = threadModel.getSync();
         this.playerSource = playerSource;
 
-        dataSource.onEnable(faucet);
+        this.dataSource.unsafe().onEnable(faucet);
         doBlockingLoad();
     }
 
@@ -53,6 +55,10 @@ import java.util.UUID;
                subscriber.onSuccess(null);
            });
         });
+    }
+
+    public IDataSource getDataSource() {
+        return dataSource;
     }
 
     @Synchronized

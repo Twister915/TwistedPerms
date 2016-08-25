@@ -1,10 +1,7 @@
 package me.twister915.perms.bukkit;
 
 import lombok.Getter;
-import me.twister915.perms.model.PermissionsManager;
-import me.twister915.perms.model.ResourceFaucet;
-import me.twister915.perms.model.SQLDataSource;
-import me.twister915.perms.model._IDataSource;
+import me.twister915.perms.model.*;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.CustomClassLoaderConstructor;
 import tech.rayline.core.library.IgnoreLibraries;
@@ -22,25 +19,27 @@ import java.util.List;
 public final class TwistedPermsBukkit extends RedemptivePlugin implements ResourceFaucet {
     @Getter private static TwistedPermsBukkit instance;
 
+    private BukkitThreadModel threadModel;
     private PermissionsManager permissionsManager;
     private Yaml yaml = new Yaml(new CustomClassLoaderConstructor(getClass().getClassLoader()));
 
     @Override
     protected void onModuleEnable() throws Exception {
         instance = this;
-        permissionsManager = new PermissionsManager(new BukkitPlayerSource(this), new BukkitThreadModel(this), getDataSource(), this);
+        threadModel = new BukkitThreadModel(this);
+        permissionsManager = new PermissionsManager(new BukkitPlayerSource(this), threadModel, getDataSource(), this);
     }
 
-    protected _IDataSource getDataSource() throws Exception {
+    protected PreDataSource getDataSource() throws Exception {
         String dataSource = getConfig().getString("data-source", "sql");
         switch (dataSource.toLowerCase().trim()) {
             case "sql":
                 return construct(SQLDataSource.class);
         }
-        throw new IllegalArgumentException("");
+        throw new IllegalArgumentException("Invalid data source specified!");
     }
 
-    private <T extends _IDataSource> T construct(Class<T> dataSourceType) throws Exception {
+    private <T extends PreDataSource> T construct(Class<T> dataSourceType) throws Exception {
         MavenLibraries annotation = dataSourceType.getAnnotation(MavenLibraries.class);
         if (annotation != null && !getClass().isAnnotationPresent(IgnoreLibraries.class))
             LibraryHandler.load(this, annotation.value());
